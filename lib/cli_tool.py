@@ -1,48 +1,82 @@
-# cli_tool.py
-
 import argparse
 from models import Task, User
 
-# Global dictionary to store users and their tasks
+# In-memory storage
 users = {}
 
-# TODO: Implement function to add a task for a user
+
 def add_task(args):
-    # - Check if the user exists, if not, create one
-    # - Create a new Task with the given title
-    # - Add the task to the user's task list
-    pass
+    # Get or create user
+    if args.user not in users:
+        users[args.user] = User(args.user)
 
-# TODO: Implement function to mark a task as complete
+    user = users[args.user]
+
+    # Create and add task
+    task = Task(args.title)
+    user.add_task(task)
+
+
 def complete_task(args):
-    # - Look up the user by name
-    # - Look up the task by title
-    # - Mark the task as complete
-    # - Print appropriate error messages if not found
-    pass
+    user = users.get(args.user)
 
-# CLI entry point
+    if not user:
+        print("User not found.")
+        return
+
+    task = user.get_task(args.title)
+
+    if not task:
+        print("Task not found.")
+        return
+
+    task.complete()
+
+
+def list_tasks(args):
+    user = users.get(args.user)
+
+    if not user:
+        print("User not found.")
+        return
+
+    if not user.tasks:
+        print("No tasks found.")
+        return
+
+    for task in user.tasks:
+        status = "✓" if task.completed else "✗"
+        print(f"[{status}] {task.title}")
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Task Manager CLI")
-    subparsers = parser.add_subparsers()
+    parser = argparse.ArgumentParser(description="Task Manager CLI Tool")
+    subparsers = parser.add_subparsers(dest="command")
 
-    # Subparser for adding tasks
-    add_parser = subparsers.add_parser("add-task", help="Add a task for a user")
+    # Add Task
+    add_parser = subparsers.add_parser("add-task", help="Add a new task")
     add_parser.add_argument("user")
     add_parser.add_argument("title")
     add_parser.set_defaults(func=add_task)
 
-    # Subparser for completing tasks
-    complete_parser = subparsers.add_parser("complete-task", help="Complete a user's task")
+    # Complete Task
+    complete_parser = subparsers.add_parser("complete-task", help="Complete a task")
     complete_parser.add_argument("user")
     complete_parser.add_argument("title")
     complete_parser.set_defaults(func=complete_task)
 
+    # List Tasks
+    list_parser = subparsers.add_parser("list", help="List tasks for a user")
+    list_parser.add_argument("user")
+    list_parser.set_defaults(func=list_tasks)
+
     args = parser.parse_args()
+
     if hasattr(args, "func"):
         args.func(args)
     else:
         parser.print_help()
+
 
 if __name__ == "__main__":
     main()
