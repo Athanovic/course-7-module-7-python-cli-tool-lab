@@ -1,18 +1,23 @@
+import sys
+import io
+
+# Fix Windows emoji output
+if sys.stdout.encoding != "utf-8":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+
 import argparse
-from models import Task, User
+from lib.models import Task, User
 
 # In-memory storage
 users = {}
 
 
 def add_task(args):
-    # Get or create user
     if args.user not in users:
         users[args.user] = User(args.user)
 
     user = users[args.user]
 
-    # Create and add task
     task = Task(args.title)
     user.add_task(task)
 

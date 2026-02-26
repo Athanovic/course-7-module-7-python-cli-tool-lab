@@ -5,7 +5,7 @@ class Task:
 
     def complete(self):
         self.completed = True
-        print(f"Task '{self.title}' completed.")
+        print(f"✅ Task '{self.title}' completed.")
 
 
 class User:
@@ -15,7 +15,7 @@ class User:
 
     def add_task(self, task):
         self.tasks.append(task)
-        print(f"Task '{task.title}' added to {self.name}.")
+        print(f"📌 Task '{task.title}' added to {self.name}.")
 
     def get_task(self, title):
         for task in self.tasks:
